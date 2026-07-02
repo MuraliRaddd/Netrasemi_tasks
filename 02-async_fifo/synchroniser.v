@@ -3,8 +3,8 @@
 module synchroniser #(parameter BUS_WIDTH = 3) (
 	input logic [BUS_WIDTH:0] p_in, // Incoming pointer value cross-transmitted from either the read or write domain. 
 	input logic clk,  // Input clock signal, dictating the cadence at which register values are updated (either write or read-clock initiated).
-
-	output logic [BUS_WIDTH:0] p_out // Pointer value output method. Serves as the final register in the synchroniser. 
+ 	input logic rst,
+	output logic [BUS_WIDTH:0] p_out	// Pointer value output method. Serves as the final register in the synchroniser. 
 	);
 	
 	// Invoke an additional 5-bit register to serve as the 1st, intermediary register stage. External ports are not required for this register, hence it is declared outside the module 

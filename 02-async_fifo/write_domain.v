@@ -25,17 +25,17 @@ module write_domain #(parameter PTR_WIDTH = 3) (
 	
 	always_comb
 	begin
-		for (int i = PTR_WIDTH, i > -1, i--)
+		for (int i = PTR_WIDTH; i > -1; i--)
 		begin
 			// Assign the MSB of the binary version of the read pointer to the MSB of the gray version (fundamental rule of gray-binary conversion)
 
 			if (i == PTR_WIDTH)
 			begin 
-				[i] r_bin_next = [i] r_gray_ptr;
+				r_bin_next [i] = r_gray_ptr [i];
 			end
 			else 
 			begin 
-				[i] r_bin_next = [i + 1] r_bin_next ^ [i] r_gray_ptr;
+				 r_bin_next [i] = r_bin_next [i + 1] ^  r_gray_ptr [i];
 			end
 
 		end

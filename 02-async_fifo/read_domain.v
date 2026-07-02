@@ -8,7 +8,8 @@ module read_domain #(parameter PTR_WIDTH = 3) (
 
         output logic [PTR_WIDTH:0] r_bin_ptr, // Read pointer in binary format, to release payloads in chronological order during the burst sequence. 
         output logic [PTR_WIDTH:0] r_gray_ptr, // Read pointer in gray format, to be persisted to the opposite write domain via CDC for full depth logic. 
-        output logic               empty // Active-high empty flag when the FIFO reaches a capacity of 10. 
+        output logic               empty, // Active-high empty flag when the FIFO reaches a capacity of 10. 
+	output logic 		   rd_ack // Notifies the ESP-32 that a read was successfully executed during the previous clock cycle. 
 
         );
 
@@ -25,17 +26,17 @@ module read_domain #(parameter PTR_WIDTH = 3) (
 
         always_comb
         begin
-                for (int i = PTR_WIDTH, i > -1, i--)
+                for (int i = PTR_WIDTH; i > -1; i--)
                 begin
                         // Assign the MSB of the binary version of the write pointer to the MSB of the gray version (fundamental rule of gray-binary conversion)
 
                         if (i == PTR_WIDTH)
                         begin
-                                [i] w_bin_next = [i] w_gray_ptr;
+                                w_bin_next [i] = w_gray_ptr [i];
                         end
                         else
                         begin
-                                [i] w_bin_next = [i + 1] w_bin_next ^ [i] w_gray_ptr;
+                                w_bin_next [i] =  w_bin_next [i + 1] ^  w_gray_ptr [i];
                         end
 
                 end
@@ -48,33 +49,22 @@ module read_domain #(parameter PTR_WIDTH = 3) (
                 begin
                         r_bin_ptr <= 0;
                         r_gray_ptr <= 0;
+			rd_ack    <= 0;
+			empty     <= 0;
                 end
                 else
                 begin
                         // If the read enable AND gate conditions are satisfied, update both local read pointers based on the formulas states above. 
                         if (rd_en & !empty)
-                        begi
+			begin
                                 r_bin_ptr <= r_bin_next;
                                 r_gray_ptr <= r_gray_next;
+				rd_ack <= 1;
+				empty <= (r_bin_next == w_bin_next);
                         end
-                end
+			rd_ack <= 0;
+               end
 
-        end
-
-        // Empty flag logic 
-        always_ff @(posedge rclk or negedge r_rst)
-        begin
-                if (!r_rst)
-                begin
-                        empty <= 0;
-                end
-                else
-                begin
-                        if (r_bin_next == w_bin_next)
-                        begin
-                                empty <= 1;
-                        end
-                end
-        end
+       end
 endmodule
 

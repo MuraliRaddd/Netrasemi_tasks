@@ -19,6 +19,7 @@ module top_fifo #(parameter PTR_WIDTH = 3, DEPTH = 10, DATA_WIDTH = 48) (
 	output logic [DATA_WIDTH-1:0] data_out, // 48-bit output data bus. 
 	output logic full, // RAM block 'full' flag. 
 	output logic empty // RAM block 'empty' flag. 
+	// output logic rd_ack, // Read acknowledge flag, notifying the ESP-32 that the FIFO has successfully released a payload during the burst sequence. 
 	);
 	
 	// Read and write pointers
@@ -44,9 +45,10 @@ module top_fifo #(parameter PTR_WIDTH = 3, DEPTH = 10, DATA_WIDTH = 48) (
 
 	// Read-side synchronise ensure that the incoming pointer value has stabilised appropriately  and metastability is eliminated altogether, as well as the pointer value being in 
 	// perfect lockstep with the clock driving the read domain.
-	synchroniser #(PTR_WIDTH) sync (
+	synchroniser #(PTR_WIDTH) sync_r (
 		.p_in(wr_gray_ptr),
 		.clk(rclk),
+		.rst(r_rst),
 		.p_out(wr_gray_sync)
 		);
 	
@@ -58,14 +60,16 @@ module top_fifo #(parameter PTR_WIDTH = 3, DEPTH = 10, DATA_WIDTH = 48) (
 		.w_gray_ptr(wr_gray_sync),
 		.r_bin_ptr(rd_bin_ptr),
 		.r_gray_ptr(rd_gray_ptr),
-		.empty(empty)
+		.empty(empty),
+		.rd_ack(rd_ack)
 		);
 
         // Write-side synchronise ensure that the incoming pointer value has stabilised appropriately  and metastability is eliminated altogether, as well as the pointer value being in     
         // perfect lockstep with the clock driving the write domain.
-        synchroniser #(PTR_WIDTH) sync (
+        synchroniser #(PTR_WIDTH) sync_w (
                 .p_in(rd_gray_ptr),
                 .clk(wclk),
+		.rst(w_rst),
                 .p_out(rd_gray_sync)
                 );
 

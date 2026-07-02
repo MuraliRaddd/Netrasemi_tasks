@@ -22,7 +22,7 @@ module fifo #(parameter PTR_WIDTH = 3, DEPTH = 10, DATA_WIDTH = 48) (
 		if (wr_en & !full)
 		begin 
 			// The command '$bitstoreal' converts the binary pointer value to a decimal number, to allow incoming data payloads to feed into RAM wordlines. 
-			fifo [$bitstoreal(wr_bin_ptr)] <= data_in;
+			fifo [wr_bin_ptr] <= data_in;
 		end 
 	end
 	
@@ -31,7 +31,7 @@ module fifo #(parameter PTR_WIDTH = 3, DEPTH = 10, DATA_WIDTH = 48) (
 	begin 
 		if (rd_en & !empty)
 		begin	
-			data_out <= fifo [$bitstoreal(rd_bin_ptr)];
+			data_out <= fifo [rd_bin_ptr];
 		end
 	end
 endmodule
