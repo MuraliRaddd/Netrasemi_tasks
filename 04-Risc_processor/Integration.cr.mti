@@ -1,0 +1,126 @@
+{C:/Murali/Work/University/IMEE/Year Four/Semester 2/DSD Recap/CW/Activity Five - Integration/ProgramCounter.sv} {1 {vlog -work work -vopt -sv -stats=none {C:/Murali/Work/University/IMEE/Year Four/Semester 2/DSD Recap/CW/Activity Five - Integration/ProgramCounter.sv}
+Questa Altera Starter FPGA Edition-64 vlog 2025.2 Compiler 2025.05 May 31 2025
+** Note: (vlog-220) 'C:/Murali/Work/University/IMEE/Year Four/Semester 2/DSD Recap/CW/Activity Five - Integration/Integration.mpf' is used as the ini file.
+-- Compiling module program_counter
+
+Top level modules:
+	program_counter
+
+} {} {}} {C:/Murali/Work/University/IMEE/Year Four/Semester 2/DSD Recap/CW/Activity Five - Integration/assertionmath.sv} {1 {vlog -work work -vopt -sv -stats=none {C:/Murali/Work/University/IMEE/Year Four/Semester 2/DSD Recap/CW/Activity Five - Integration/assertionmath.sv}
+Questa Altera Starter FPGA Edition-64 vlog 2025.2 Compiler 2025.05 May 31 2025
+** Note: (vlog-220) 'C:/Murali/Work/University/IMEE/Year Four/Semester 2/DSD Recap/CW/Activity Five - Integration/Integration.mpf' is used as the ini file.
+-- Compiling package assertionmath
+-- Importing package InstructionSetPkg
+
+Top level modules:
+	--none--
+
+} {} {}} {C:/Murali/Work/University/IMEE/Year Four/Semester 2/DSD Recap/CW/Activity Five - Integration/RAM.v} {1 {vlog -work work -vopt -stats=none {C:/Murali/Work/University/IMEE/Year Four/Semester 2/DSD Recap/CW/Activity Five - Integration/RAM.v}
+Questa Altera Starter FPGA Edition-64 vlog 2025.2 Compiler 2025.05 May 31 2025
+** Note: (vlog-220) 'C:/Murali/Work/University/IMEE/Year Four/Semester 2/DSD Recap/CW/Activity Five - Integration/Integration.mpf' is used as the ini file.
+-- Compiling module RAM
+
+Top level modules:
+	RAM
+
+} {} {}} {C:/Murali/Work/University/IMEE/Year Four/Semester 2/DSD Recap/CW/Activity Five - Integration/HighRiscSystem.sv} {1 {vlog -work work -vopt -sv -stats=none {C:/Murali/Work/University/IMEE/Year Four/Semester 2/DSD Recap/CW/Activity Five - Integration/HighRiscSystem.sv}
+Questa Altera Starter FPGA Edition-64 vlog 2025.2 Compiler 2025.05 May 31 2025
+** Note: (vlog-220) 'C:/Murali/Work/University/IMEE/Year Four/Semester 2/DSD Recap/CW/Activity Five - Integration/Integration.mpf' is used as the ini file.
+-- Compiling package HighRiscSystem_sv_unit
+-- Importing package InstructionSetPkg
+-- Compiling module HighRiscSystem
+-- Compiling interface Bus
+-- Compiling module VgaSystem
+-- Compiling module BusInPort
+-- Compiling module BusOutPort
+-- Compiling module ProgramMemory
+-- Compiling module DataMemory
+
+Top level modules:
+	HighRiscSystem
+
+} {} {}} {C:/Murali/Work/University/IMEE/Year Four/Semester 2/DSD Recap/CW/Activity Five - Integration/HighRiscTb.sv} {1 {vlog -work work -vopt -sv -stats=none {C:/Murali/Work/University/IMEE/Year Four/Semester 2/DSD Recap/CW/Activity Five - Integration/HighRiscTb.sv}
+Questa Altera Starter FPGA Edition-64 vlog 2025.2 Compiler 2025.05 May 31 2025
+** Note: (vlog-220) 'C:/Murali/Work/University/IMEE/Year Four/Semester 2/DSD Recap/CW/Activity Five - Integration/Integration.mpf' is used as the ini file.
+-- Compiling package HighRiscTb_sv_unit
+-- Importing package InstructionSetPkg
+-- Compiling module HighRiscTb
+
+Top level modules:
+	HighRiscTb
+
+} {} {}} {C:/Murali/Work/University/IMEE/Year Four/Semester 2/DSD Recap/CW/Activity Five - Integration/ArithmeticLogicUnit.sv} {2 {vlog -work work -vopt -sv -stats=none {C:/Murali/Work/University/IMEE/Year Four/Semester 2/DSD Recap/CW/Activity Five - Integration/ArithmeticLogicUnit.sv}
+Questa Altera Starter FPGA Edition-64 vlog 2025.2 Compiler 2025.05 May 31 2025
+** Note: (vlog-220) 'C:/Murali/Work/University/IMEE/Year Four/Semester 2/DSD Recap/CW/Activity Five - Integration/Integration.mpf' is used as the ini file.
+** Warning: C:/Murali/Work/University/IMEE/Year Four/Semester 2/DSD Recap/CW/Activity Five - Integration/ArithmeticLogicUnit.sv(19): (vlog-13314) Defaulting port 'InFlags' kind to 'var' rather than 'wire' due to default compile option setting of -svinputport=relaxed.
+-- Compiling package ArithmeticLogicUnit_sv_unit
+-- Importing package InstructionSetPkg
+-- Compiling module ArithmeticLogicUnit
+** Warning: C:/Murali/Work/University/IMEE/Year Four/Semester 2/DSD Recap/CW/Activity Five - Integration/ArithmeticLogicUnit.sv(19): (vlog-13314) Defaulting port 'InFlags' kind to 'var' rather than 'wire' due to default compile option setting of -svinputport=relaxed.
+
+Top level modules:
+	ArithmeticLogicUnit
+
+} {} {}} {C:/Murali/Work/University/IMEE/Year Four/Semester 2/DSD Recap/CW/Activity Five - Integration/HighRiscProcessor.sv} {2 {vlog -work work -vopt -sv -stats=none {C:/Murali/Work/University/IMEE/Year Four/Semester 2/DSD Recap/CW/Activity Five - Integration/HighRiscProcessor.sv}
+Questa Altera Starter FPGA Edition-64 vlog 2025.2 Compiler 2025.05 May 31 2025
+** Note: (vlog-220) 'C:/Murali/Work/University/IMEE/Year Four/Semester 2/DSD Recap/CW/Activity Five - Integration/Integration.mpf' is used as the ini file.
+** Warning: C:/Murali/Work/University/IMEE/Year Four/Semester 2/DSD Recap/CW/Activity Five - Integration/HighRiscProcessor.sv(160): (vlog-13314) Defaulting port 'Flags' kind to 'var' rather than 'wire' due to default compile option setting of -svinputport=relaxed.
+** Warning: C:/Murali/Work/University/IMEE/Year Four/Semester 2/DSD Recap/CW/Activity Five - Integration/HighRiscProcessor.sv(215): (vlog-13314) Defaulting port 'NextFlags' kind to 'var' rather than 'wire' due to default compile option setting of -svinputport=relaxed.
+** Warning: C:/Murali/Work/University/IMEE/Year Four/Semester 2/DSD Recap/CW/Activity Five - Integration/HighRiscProcessor.sv(243): (vlog-13314) Defaulting port 'Flags' kind to 'var' rather than 'wire' due to default compile option setting of -svinputport=relaxed.
+-- Compiling package HighRiscProcessor_sv_unit
+-- Importing package InstructionSetPkg
+-- Compiling module HighRiscProcessor
+-- Compiling module InstructionDecoder
+** Warning: C:/Murali/Work/University/IMEE/Year Four/Semester 2/DSD Recap/CW/Activity Five - Integration/HighRiscProcessor.sv(160): (vlog-13314) Defaulting port 'Flags' kind to 'var' rather than 'wire' due to default compile option setting of -svinputport=relaxed.
+-- Compiling module FlagsRegister
+** Warning: C:/Murali/Work/University/IMEE/Year Four/Semester 2/DSD Recap/CW/Activity Five - Integration/HighRiscProcessor.sv(215): (vlog-13314) Defaulting port 'NextFlags' kind to 'var' rather than 'wire' due to default compile option setting of -svinputport=relaxed.
+-- Compiling module SourceSelector
+** Warning: C:/Murali/Work/University/IMEE/Year Four/Semester 2/DSD Recap/CW/Activity Five - Integration/HighRiscProcessor.sv(243): (vlog-13314) Defaulting port 'Flags' kind to 'var' rather than 'wire' due to default compile option setting of -svinputport=relaxed.
+
+Top level modules:
+	HighRiscProcessor
+
+} {} {}} {C:/Murali/Work/University/IMEE/Year Four/Semester 2/DSD Recap/CW/Activity Five - Integration/VgaController.sv} {1 {vlog -work work -vopt -sv -stats=none {C:/Murali/Work/University/IMEE/Year Four/Semester 2/DSD Recap/CW/Activity Five - Integration/VgaController.sv}
+Questa Altera Starter FPGA Edition-64 vlog 2025.2 Compiler 2025.05 May 31 2025
+** Note: (vlog-220) 'C:/Murali/Work/University/IMEE/Year Four/Semester 2/DSD Recap/CW/Activity Five - Integration/Integration.mpf' is used as the ini file.
+-- Compiling module VgaController
+
+Top level modules:
+	VgaController
+
+} {} {}} {C:/Murali/Work/University/IMEE/Year Four/Semester 2/DSD Recap/CW/Activity Five - Integration/RegisterFile.sv} {1 {vlog -work work -vopt -sv -stats=none {C:/Murali/Work/University/IMEE/Year Four/Semester 2/DSD Recap/CW/Activity Five - Integration/RegisterFile.sv}
+Questa Altera Starter FPGA Edition-64 vlog 2025.2 Compiler 2025.05 May 31 2025
+** Note: (vlog-220) 'C:/Murali/Work/University/IMEE/Year Four/Semester 2/DSD Recap/CW/Activity Five - Integration/Integration.mpf' is used as the ini file.
+-- Compiling module register_file
+
+Top level modules:
+	register_file
+
+} {} {}} {C:/Murali/Work/University/IMEE/Year Four/Semester 2/DSD Recap/CW/Activity Five - Integration/HighRiscChecker.sv} {1 {vlog -work work -vopt -sv -stats=none {C:/Murali/Work/University/IMEE/Year Four/Semester 2/DSD Recap/CW/Activity Five - Integration/HighRiscChecker.sv}
+Questa Altera Starter FPGA Edition-64 vlog 2025.2 Compiler 2025.05 May 31 2025
+** Note: (vlog-220) 'C:/Murali/Work/University/IMEE/Year Four/Semester 2/DSD Recap/CW/Activity Five - Integration/Integration.mpf' is used as the ini file.
+-- Compiling package HighRiscChecker_sv_unit
+-- Importing package InstructionSetPkg
+-- Importing package assertionmath
+-- Compiling module RiscChecker
+
+Top level modules:
+	RiscChecker
+
+} {} {}} {C:/Murali/Work/University/IMEE/Year Four/Semester 2/DSD Recap/CW/Activity Five - Integration/InstructionSet.sv} {1 {vlog -work work -vopt -sv -stats=none {C:/Murali/Work/University/IMEE/Year Four/Semester 2/DSD Recap/CW/Activity Five - Integration/InstructionSet.sv}
+Questa Altera Starter FPGA Edition-64 vlog 2025.2 Compiler 2025.05 May 31 2025
+** Note: (vlog-220) 'C:/Murali/Work/University/IMEE/Year Four/Semester 2/DSD Recap/CW/Activity Five - Integration/Integration.mpf' is used as the ini file.
+-- Compiling package InstructionSetPkg
+
+Top level modules:
+	--none--
+
+} {} {}} {C:/Murali/Work/University/IMEE/Year Four/Semester 2/DSD Recap/CW/Activity Five - Integration/RomBlock.v} {1 {vlog -work work -vopt -stats=none {C:/Murali/Work/University/IMEE/Year Four/Semester 2/DSD Recap/CW/Activity Five - Integration/RomBlock.v}
+Questa Altera Starter FPGA Edition-64 vlog 2025.2 Compiler 2025.05 May 31 2025
+** Note: (vlog-220) 'C:/Murali/Work/University/IMEE/Year Four/Semester 2/DSD Recap/CW/Activity Five - Integration/Integration.mpf' is used as the ini file.
+-- Compiling module RomBlock
+
+Top level modules:
+	RomBlock
+
+} {} {}}
