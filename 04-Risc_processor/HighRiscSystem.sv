@@ -44,7 +44,7 @@ module HighRiscSystem
 	assign LEDR    = LEDs[9:0];
 
 
-   Bus #(1,0) Ibus();
+   	Bus #(2,2) Ibus();
 	Bus #(2,2) Dbus();
 	
 	assign WriteAssertEnable = Dbus.Master.WriteEnable; // Assign the data memory block's write enable signal to the output assertion enable, to pinpoint when the final value is stored in the data memory. 
@@ -135,15 +135,38 @@ interface Bus
 	// 16k word block connections
 	logic [13:0]             SlaveAddress;
 	logic [DataWidth-1:0] 	 SlaveReadData [4];
+	logic [DataWidth-1:0] SlaveReadData0, SlaveReadData1;
+	logic SlaveWriteEnable0, SlaveWriteEnable1;
 	logic [3:0]       SlaveWriteEnable;
 	logic [1:0]              BlockInUse;
 	
 	// 512 word block connections
 	logic [8:0]              PortAddress;
 	logic [DataWidth-1:0] 	 PortReadData [32];
-	logic [32:0]        PortWriteEnable;	
+	logic [DataWidth-1:0] 	 PortReadData0, PortReadData1;
+	logic [32:0]        PortWriteEnable;
+	logic PortWriteEnable0, PortWriteEnable1;	
 	logic [4:0]              PortInUse;
+
+	// Assign the per-index scalar 'SlaveReadData0 and SlaveReadData1' signals to their
+	// indexed counterparts, extracted from the 'SlaveReadData' output
+	// port. 
+	assign SlaveReadData[0] = SlaveReadData0;
+       	assign SlaveReadData[1] = SlaveReadData1;
+
+	// Assign the incoming indexed 'SlaveWriteEnable' vector to its
+	// isolated 'SlaveWriteEnable0 or SlaveWriteEnable1' counterpart. 	
 	
+	assign SlaveWriteEnable0 = SlaveWriteEnable[0];
+	assign SlaveWriteEnable1 = SlaveWriteEnable[1];
+
+	// Apply an identical principle to the assignment of slice indexing of
+	// ports. 
+	assign PortReadData[0] = PortReadData0;
+	assign PortReadData[1] = PortReadData1;
+	assign PortWriteEnable0 = PortWriteEnable[0];
+	assign PortWriteEnable1 = PortWriteEnable[1];
+
 	// The master controls writes and the address
    modport Master 
 	(
@@ -155,16 +178,16 @@ interface Bus
 	// Establish the internal connections for the Rom Block, i.e. the Instruction domain. 
 	modport Slave0(
 		input SlaveAddress,
-		output .ReadData(SlaveReadData[0]),
+		output .ReadData(SlaveReadData0),
 		input WriteData,
-		input .WriteEnable(SlaveWriteEnable[0])
+		input .WriteEnable(SlaveWriteEnable0)
 		);
 	// Establish the internal connections for the data memory block i.e. the Data domain. 
 	modport Slave1(
 		input SlaveAddress,
-		output .ReadData(SlaveReadData[1]),
+		output .ReadData(SlaveReadData1),
 		input WriteData,
-		input .WriteEnable(SlaveWriteEnable[1])
+		input .WriteEnable(SlaveWriteEnable1)
 		);
 	
 	
@@ -207,16 +230,16 @@ interface Bus
 	
 	modport Port0(
 	input  PortAddress,
-	output .ReadData(PortReadData[0]),
+	output .ReadData(PortReadData0),
 	input  WriteData,
-	input  .WriteEnable(PortWriteEnable[0])
+	input  .WriteEnable(PortWriteEnable0)
 	);
 
 	modport Port1(
 	input  PortAddress,
-	output .ReadData(PortReadData[1]),
+	output .ReadData(PortReadData1),
 	input  WriteData,
-	input  .WriteEnable(PortWriteEnable[1])
+	input  .WriteEnable(PortWriteEnable1)
 	);
 	
 	generate

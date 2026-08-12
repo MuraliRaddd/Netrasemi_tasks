@@ -1,0 +1,2 @@
+VHighRiscTb_std__03a__03asemaphore__Vclpkg__0.o: \
+ VHighRiscTb_std__03a__03asemaphore__Vclpkg__0.cpp VHighRiscTb__pch.h
