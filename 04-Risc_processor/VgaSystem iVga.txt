@@ -1,0 +1,89 @@
+	VgaSystem iVga
+	(
+		.CLOCK_50,
+		.Reset,
+		.VGA_BLANK_N,
+		.VGA_SYNC_N,
+		.VGA_HS,
+		.VGA_VS,
+		.VGA_R,
+		.VGA_G,
+		.VGA_B,
+		
+		.TheBus(Dbus.Block16k[1].Slave)		
+	);
+
+
+// The VgaSystem module instantiates the VGA controller with a dual port RAM to permit
+// a display to be produced and modified by the processor.
+module VgaSystem
+(
+	input CLOCK_50,
+	input Reset,
+	output logic        VGA_BLANK_N,
+	output logic        VGA_SYNC_N,
+	output logic        VGA_HS,
+	output logic        VGA_VS,
+	output logic [ 7:0] VGA_R,
+	output logic [ 7:0] VGA_G,
+	output logic [ 7:0] VGA_B,
+	
+	interface TheBus
+);
+   // A memory block
+	logic [15:0] VgaRam [16384];
+	
+	// Signals used to extract the individual pixel value from the VGA memory
+	logic [15:0] PixelPair;
+	logic [ 7:0] Pixel;
+	logic [10:0] nextX;
+	logic [ 9:0] nextY;
+
+	// Instantiate the module designed by the student to generate VGA 
+	// control signals.
+	// The VGA controller is expected to produce an 800x600 VESA comaptible
+   //	signal and this is effectively downsampled to produce a 200x150 display.
+	VgaController iControl
+	(
+		.Clock(CLOCK_50),
+		.Reset,
+		.blank_n(VGA_BLANK_N),
+		.sync_n(VGA_SYNC_N),
+		.hSync_n(VGA_HS),
+		.vSync_n(VGA_VS),
+		.nextX,
+		.nextY
+	);
+
+	// Create a dual port memory that can be read or written over the bus
+	// and can be simultaneously read to get pixels for the screen. Pixels 
+	// take one byte each and are stored in pairs so that one row of pixels 
+	// takes 100 memory locations and the whole screen is 15000 memory 
+	// locations.
+	always_ff @(posedge CLOCK_50)
+	begin
+		TheBus.ReadData = VgaRam[TheBus.SlaveAddress];
+		if (TheBus.WriteEnable)	VgaRam[TheBus.SlaveAddress] <= TheBus.WriteData;
+			
+		if( nextX >= 11'd0 && nextX <= 11'd799 )
+			begin
+				if( nextY >= 10'd8 && nextY <= 10'd599 )
+					begin
+					PixelPair <= VgaRam[(nextX[10:2]*75)+nextY[9:3]];
+					end
+			end			
+	end
+
+	
+	// Split the value read from the memory to get the correct pixel byte.
+	// The pixel is stored as RRRGGGBB format (i.e 3 bit red value, 3 bit
+	// green value, 2 bit blue value).
+	always_comb
+	begin
+		Pixel = PixelPair[((nextY[0])?15:7) -:8];
+		VGA_R = {{2{Pixel[7 -:3]}},2'b00};
+		VGA_G = {{2{Pixel[4 -:3]}},2'b00};
+		VGA_B =  {4{Pixel[1 -:2]}};
+	end
+
+endmodule

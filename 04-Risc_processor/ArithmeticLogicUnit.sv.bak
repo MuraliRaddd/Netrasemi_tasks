@@ -1,0 +1,364 @@
+// ArithmeticLogicUnit
+// This is a basic implementation of the essential operations needed
+// in the ALU. Adding futher instructions to this file will increase 
+// your marks.
+
+// Load information about the instruction set. 
+import InstructionSetPkg::*;
+
+// Define the connections into and out of the ALU.
+module ArithmeticLogicUnit
+(
+	// The Operation variable is an example of an enumerated type and
+	// is defined in InstructionSetPkg.
+	input eOperation Operation,
+	
+	// The InFlags and OutFlags variables are examples of structures
+	// which have been defined in InstructionSetPkg. They group together
+	// all the single  OutFlags, bit flags described by the Instruction set.
+	input  sFlags    InFlags,
+	output sFlags    OutFlags,
+	
+	// All the input and output busses have widths determined by the 
+	// parameters defined in InstructionSetPkg.
+	input  signed [ImmediateWidth-1:0] InImm,
+	
+	// InSrc and InDest are the values in the source and destination
+	// registers at the start of the instruction.
+	input  signed [DataWidth-1:0] InSrc,
+	input  signed [DataWidth-1:0]	InDest,
+	
+	// OutDest is the result of the ALU operation that is written 
+	// into the destination register at the end of the operation.
+	output logic signed [DataWidth-1:0] OutDest
+);
+	// Define a carry bit to store the input carry flag every for loop iteration.
+	logic temp_carry;
+	
+	bit parity_sum;
+	
+	logic signed [DataWidth-1:0] nInSrc;
+	
+	logic signed [(2*DataWidth) - 1:0] full_product;
+	// This block allows each OpCode to be defined. Any opcode not
+	// defined outputs a zero. The names of the operation are defined 
+	// in the InstructionSetPkg. 
+	always_comb
+	begin
+	
+		// By default the flags are unchanged. Individual operations
+		// can override this to change any relevant flags.
+		OutFlags  = InFlags;
+		
+		// Default internal wire states
+		temp_carry = 1'b0;
+		parity_sum = 1'b0;
+		full_product = '0;
+		
+		// The basic implementation of the ALU only has the NAND and
+		// ROL operations as examples of how to set ALU outputs 
+		// based on the operation and the register / flag inputs.
+		case(Operation)		
+			// Note that the HighRISC processor's definition of a ROL is not representative of an industry-standard definition - the MSB of the input source register is assigned to the output carry value, to be discarded ultimately (effectively a multi-register/operation shift left).
+			ROL:
+				begin
+					{OutFlags.Carry,OutDest} = {InSrc,InFlags.Carry};	
+					
+				end
+			ROR: 
+				begin
+				// The input 16-bit source register is shifted right by one binary unit.
+					OutDest = InSrc >> 1;
+				
+				// The current input carry flag is assigned to the MSB of the output destination flag. 
+					OutDest[15] = InFlags.Carry;
+				
+				// Eventually, after all register right shifts have been successfully conducted, the output carry flag is assigned to LSB of the source. 
+					OutFlags.Carry = InSrc[0];
+				end
+					
+				
+			NAND:    OutDest = ~(InSrc & InDest);
+
+			LIL:	 OutDest = $signed(InImm);
+
+			LIU:
+				begin
+					if (InImm[ImmediateWidth - 1] ==  1)
+						OutDest = {InImm[ImmediateWidth - 2:0], InDest[ImmediateHighStart - 1:0]};
+					else if  (InImm[ImmediateWidth - 1] ==  0)	
+						OutDest = $signed({InImm[ImmediateWidth - 2:0], InDest[ImmediateMidStart - 1:0]});
+					else
+						OutDest = InDest;	
+				end
+			MOVE:
+				begin
+					OutDest = InSrc; // The MOVE opcode copies the contents of the register Src to the register Dest.
+				end
+			NOR: 
+				begin
+					OutDest = ~(InSrc | InDest); // The NOR opcode computes a NOR gate, receiving the contents of Src and Dest as inputs. 
+				end
+
+			ADC:
+				begin
+					parity_sum = 1'b0;
+					temp_carry = InFlags.Carry; 
+					
+					// For loop, to compute the sum bit-by-bit, and feeding the carry sum into the next iteration. 
+					for(int n = 0; n < DataWidth; n++)
+					begin
+						
+						OutDest[n] = InDest[n] ^ InSrc[n] ^ temp_carry;
+						temp_carry = (temp_carry & (InDest[n] ^ InSrc[n])) | (InDest[n] & InSrc[n]);	
+					end
+					
+					// Reset OutFlags.Carry back to 0. 
+					OutFlags.Carry = temp_carry;
+					
+					// Detail continuous assignments to validate whether the negative, overflow or zeroes must be pulled up. 
+					OutFlags.Zero = (OutDest == 0);
+					OutFlags.Negative = (OutDest[15] == 1);
+					OutFlags.Overflow = ((((InSrc[15] || InDest[15]) == 0) && (OutDest[15] == 1)) || (((InSrc[15] && InDest[15]) == 1) && (OutDest[15] == 0)));
+					
+					// casez is favoured of standard case terminology, since this block includes don't care states (denoted by ?)
+					/* casez(OutDest)
+						16'b0: 
+						begin
+							// Zero flag (Z), when the ALU operation result is zero. 
+							OutFlags.Zero = 1'b1;
+						end
+						
+						16'b1???_????_????_????:
+						begin
+							// If the MSB of the output is high, the negative flag (N) must be pulled high. 
+							OutFlags.Negative = 1'b1;
+							if((InSrc[15] || InDest[15]) == 0)
+							begin
+								// If both the MSBs of the input destination and source registers is zero, given the output MSB is high, the overflow flag must be pulled up. 
+								OutFlags.Overflow = 1'b1;
+							end
+						end
+						
+						16'b0???_????_????_????:
+						begin
+							if(InSrc[15] && InDest[15] == 1)
+							begin
+								// If both the MSBs of the input destination and source registers are high, given the output MSB is low, the overflow flag must be pulled up. 
+								OutFlags.Overflow = 1'b1;
+							end
+						end
+						
+						default: 
+						begin
+							OutFlags.Overflow = 1'b0;
+							OutFlags.Negative = 1'b0;
+							OutFlags.Zero = 1'b0;
+						end
+					endcase */
+					// For loop to compute the parity flag (note that when the sum of all bits is zero, the number contains an even number of 1s.)
+					for(int j = 0; j < DataWidth; j++)
+					begin
+						parity_sum = parity_sum + OutDest[j];
+					end
+					
+					if(parity_sum == 0)
+					begin
+						OutFlags.Parity = 1'b1;
+					end 
+					else
+					begin
+						OutFlags.Parity = 1'b0;
+					end
+				end
+						
+				SUB:
+				begin
+					parity_sum = 1'b0;
+					// temp_carry = InFlags.Carry;
+					temp_carry = InFlags.Carry;
+					nInSrc = ~InSrc;
+	
+						
+					// For loop, to compute the subtraction bit-by-bit, and feeding the carry bit into the next iteration. 
+					for(int n = 0; n < DataWidth; n++)
+					begin	
+						OutDest[n] = InDest[n] ^ nInSrc[n] ^ temp_carry;
+						temp_carry = (temp_carry & (InDest[n] ^ nInSrc[n])) | (InDest[n] & nInSrc[n]);	
+					end
+					
+					// Reset OutFlags.Carry back to 0. 
+					OutFlags.Carry = temp_carry;
+					
+					// Detail continuous assignments to validate whether the negative, overflow or zeroes must be pulled up. 
+					OutFlags.Zero = (OutDest == 0);
+					OutFlags.Negative = (OutDest[15] == 1);
+					OutFlags.Overflow = ((((InSrc[15] == 0) && (InDest[15] == 1)) && (OutDest[15] == 1)) || (((InSrc[15] == 1) && (InDest[15] == 0)) && (OutDest[15] == 0)));
+					
+					// casez is favoured of standard case terminology, since this block includes don't care states (denoted by ?)
+					/* casez(OutDest)
+						16'b0: 
+						begin
+							// Zero flag (Z), when the ALU operation result is zero. 
+							OutFlags.Zero = 1'b1;
+						end
+						
+						16'b1???_????_????_????:
+						begin
+							// If the MSB of the output is high, the negative flag (N) must be pulled high. 
+							OutFlags.Negative = 1'b1;
+							if((InSrc[15] == 0) && (InDest[15] == 1))
+							begin
+								// If the MSB of the input destination register is 1, and the input source register is 0, given the output MSB is high, the overflow flag must be pulled up. 
+								OutFlags.Overflow = 1'b1;
+							end
+						end
+						
+						16'b0???_????_????_????:
+						begin
+							if((InSrc[15] == 1)&& (InDest[15] == 0))
+							begin
+								// If the MSB of the input destination register is 0, and the input source register is 1, given the output MSB is high, the overflow flag must be pulled up.
+								OutFlags.Overflow = 1'b1;
+							end
+						end
+						
+						default: 
+						begin
+							OutFlags.Overflow = 1'b0;
+							OutFlags.Negative = 1'b0;
+							OutFlags.Zero = 1'b0;
+						end
+					endcase */
+					// For loop to compute the parity flag (note that when the sum of all bits is zero, the number contains an even number of 1s.)
+					for(int j = 0; j < DataWidth; j++)
+					begin
+						parity_sum = parity_sum + OutDest[j];
+					end
+					
+					if(parity_sum == 0)
+					begin
+						OutFlags.Parity = 1'b1;
+					end 
+					else
+					begin
+						OutFlags.Parity = 1'b0;
+					end
+				end
+				
+				DIV:
+				begin
+					OutFlags.Carry = 1'b0;
+					OutDest = InDest / InSrc; // Divide the value contained within the input destination register by the input source register. 
+					// casez is favoured of standard case terminology, since this block includes don't care states (denoted by ?)
+					
+					// Detail continuous assignments to validate whether the negative, overflow or zeroes must be pulled up. 
+					OutFlags.Zero = (OutDest == 0);
+					OutFlags.Negative = (OutDest[15] == 1);
+					// For loop to compute the parity flag (note that when the sum of all bits is zero, the number contains an even number of 1s.)
+					for(int j = 0; j < DataWidth; j++)
+					begin
+						parity_sum = parity_sum + OutDest[j];
+					end
+					
+					if(parity_sum == 0)
+					begin
+						OutFlags.Parity = 1'b1;
+					end 
+					else
+					begin
+						OutFlags.Parity = 1'b0;
+					end
+				end
+				
+				MOD:
+				begin
+					OutFlags.Carry = 1'b0;
+					OutDest = InDest % InSrc; // Divide the value contained within the input destination register by the input source register, and compute the remainder
+					// casez is favoured of standard case terminology, since this block includes don't care states (denoted by ?)
+					
+					// Detail continuous assignments to validate whether the negative, overflow or zeroes must be pulled up. 
+					OutFlags.Zero = (OutDest == 0);
+					OutFlags.Negative = (OutDest[15] == 1);
+					
+					// For loop to compute the parity flag (note that when the sum of all bits is zero, the number contains an even number of 1s.)
+					for(int j = 0; j < DataWidth; j++)
+					begin
+						parity_sum = parity_sum + OutDest[j];
+					end
+					
+					if(parity_sum == 0)
+					begin
+						OutFlags.Parity = 1'b1;
+					end 
+					else
+					begin
+						OutFlags.Parity = 1'b0;
+					end
+				end
+				
+				MUL:
+				begin
+					OutFlags.Carry = 1'b0;
+					full_product = InDest * InSrc;
+					OutDest = full_product [DataWidth-1:0]; // Select the bottom half of the product of the input destination and source register to assign. 
+					// casez is favoured of standard case terminology, since this block includes don't care states (denoted by ?)
+					
+					// Detail continuous assignments to validate whether the negative, overflow or zeroes must be pulled up. 
+					OutFlags.Zero = (OutDest == 0);
+					OutFlags.Negative = (OutDest[15] == 1);
+					
+					// For loop to compute the parity flag (note that when the sum of all bits is zero, the number contains an even number of 1s.)
+					for(int j = 0; j < DataWidth; j++)
+					begin
+						parity_sum = parity_sum + OutDest[j];
+					end
+					
+					if(parity_sum == 0)
+					begin
+						OutFlags.Parity = 1'b1;
+					end 
+					else
+					begin
+						OutFlags.Parity = 1'b0;
+					end
+				end
+					
+				MUH:
+				begin
+					OutFlags.Carry = 1'b0;
+					full_product = InDest * InSrc;
+					OutDest = full_product [(2*DataWidth-1):DataWidth]; // Select the top half of the product of the input destination and source register to assign. 
+					// casez is favoured of standard case terminology, since this block includes don't care states (denoted by ?)
+					
+					// Detail continuous assignments to validate whether the negative, overflow or zeroes must be pulled up. 
+					OutFlags.Zero = (OutDest == 0);
+					OutFlags.Negative = (OutDest[15] == 1);
+					
+					// For loop to compute the parity flag (note that when the sum of all bits is zero, the number contains an even number of 1s.)
+					for(int j = 0; j < DataWidth; j++)
+					begin
+						parity_sum = parity_sum + OutDest[j];
+					end
+					
+					if(parity_sum == 0)
+					begin
+						OutFlags.Parity = 1'b1;
+					end 
+					else
+					begin
+						OutFlags.Parity = 1'b0;
+					end
+				end
+			default:	
+			begin
+				OutDest = '0;
+				parity_sum = '0;
+				temp_carry = '0;
+				full_product = '0;
+			end
+				
+		endcase;
+	end
+
+endmodule

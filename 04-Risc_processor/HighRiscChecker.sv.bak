@@ -1,0 +1,9 @@
+// SVA for the complete HighRisc Processor. 
+// MR 09/08/2026
+import InstructionSetPkg ::*;
+
+module RiscChecker(
+	input logic SampleClk, // Testbench-driven clock source, to execute SVA/s
+	input logic [DataWidth-1:0] DataAssertVal; // HighRisc output 16-bit value.  
+	input logic [AddressWidth-1:0] AddrAssert; // HighRisc intended data memory address. 
+	input 

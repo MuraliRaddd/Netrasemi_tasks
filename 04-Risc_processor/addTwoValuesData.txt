@@ -1,0 +1,28 @@
+// Add two values from 'Data.mif', and store this value back in the Data memory block. 
+// M.R.
+// 07/08/2026
+//
+
+
+LIL R6, 0      // Set R6 to the address of the switches (0xC000)
+LIU R6, 0x38   
+LIL R7, 0      // Set R7 to the Address of the switches as well (0xC000)
+LIU R7, 0x38
+
+// LIL R1, 0     // Populate the contents of register file R1 with the data memory address storing the first term to be summed. 
+// LIL R2, 1     // Populate the contents of register file R2 with the data memory address storing the second term to be summed. 
+LIL R5, 2     // Populate the contents of register file R5 with the data memory address to be populated with the output of the sum. 
+
+LOAD R3,(R6)  // Retrieve the contents of the memory address housed within R1, and load this into R3. 
+// LOAD R3,(R6)  // Stale data will be present during the first invocation of the 'LOAD' operation, since a one-clock-cycle delay is inevitable when extracting 
+	      // data from the data memory block. Hence, another invocation of 'LOAD' is required to filter the accurate contents of 'R1'. 		
+LOAD R4,(R7)  // Retrieve the contents of the memory address housed within R2, and load this into R4.
+// LOAD R4,(R7)  // Stale data will be present during the first invocation of the 'LOAD' operation, since a one-clock-cycle delay is inevitable when extracting 
+	      // data from the data memory block. Hence, another invocation of 'LOAD' is required to filter the accurate contents of 'R2'. 
+
+ADC R4, R3    // Perform an addition between the contents of R3 and R4, and store the output within R4 (OutDest). 
+STORE (R5), R4 // Store the output of the sum in the data memory address indicated by R5. 
+
+
+
+

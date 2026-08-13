@@ -1,0 +1,24 @@
+// Testbench to validate the functionality of the HighRiscSystem for various instruction architectures and tasks. Note that this testbench cannot scrutinise programs that communicate with physical ports e.g. switches, keys, LEDs. 
+`timescale 1ns / 1ps // Fix the timescale. 
+
+module HighRiscTb();
+
+	logic CLOCK_50; // Master clock source.
+	/* 
+	VGA LOGIC VARIABLES TO BE INITIALISED IN FUTURE TEST RUNS OF THE VGA.
+	*/
+	
+	// Instantiate the top-level module for the processor. 
+	HighRiscSystem uut(
+		.CLOCK_50(CLOCK_50)
+		);
+		
+	// Initialise the clock source, with an arbitrary time period of 10ns. 
+	always #5 CLOCK_50 = ~CLOCK_50;
+	
+	// Initialise the testbench and control the simulation
+	initial begin
+		CLOCK_50 = '0;
+	end
+endmodule
+	

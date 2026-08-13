@@ -1,0 +1,2 @@
+VHighRiscTb_ALTERA_DEVICE_FAMILIES__Slow.o: \
+ VHighRiscTb_ALTERA_DEVICE_FAMILIES__Slow.cpp VHighRiscTb__pch.h
