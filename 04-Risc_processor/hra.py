@@ -243,15 +243,62 @@ def write_mif(events, out_path, depth, fill):
         f.write("END;\n")
 
 
+def write_hex(events, out_path, depth, fill):
+    """
+    Write a flat $readmemh-compatible hex file: one 16-bit hex value per
+    line, no address column, no header block. Verilog/SystemVerilog
+    simulators (and Quartus's $readmemh-based memory initialisation for
+    inferred RAM) load this by array index, so line N == word at address N,
+    same ordering as the .mif CONTENT block.
+
+    '//' end-of-line comments are legal in $readmemh input and are ignored
+    by the reader, so the same @addr MNEMONIC annotations used in the .mif
+    are kept here purely for human readability - they carry no meaning to
+    $readmemh itself.
+    """
+    instr_count = sum(1 for e in events if e[0] == "instr")
+    if instr_count > depth:
+        raise SystemExit(
+            f"Error: program has {instr_count} instructions but DEPTH={depth}. "
+            f"Increase --depth or shorten the program."
+        )
+
+    addr = 0
+    body_lines = []
+    for e in events:
+        if e[0] == "blank":
+            continue  # no address consumed; skip in the flat hex output
+        elif e[0] == "comment":
+            continue  # comment-only source lines don't occupy a memory word either
+        else:  # instr
+            _, word, mnemonic, operand_repr, comment = e
+            suffix = f" {comment}" if comment else ""
+            body_lines.append(f"{word:04x} // @{addr:04x} {mnemonic} {operand_repr}{suffix}")
+            addr += 1
+
+    with open(out_path, "w", newline="\n") as f:
+        f.write("// Produced by: HighRISC Python Assembler (hra.py)\n")
+        f.write("// $readmemh-compatible flat hex - one word per line, indexed from 0\n")
+        for line in body_lines:
+            f.write(line + "\n")
+        for a in range(addr, depth):
+            f.write(f"{fill:04x} // unused (unreachable past halt trap)\n")
+
+
 def main():
     ap = argparse.ArgumentParser(description="HighRISC assembler (Hra.exe replacement)")
     ap.add_argument("-i", dest="infile", required=True, help="Input assembly .txt file")
-    ap.add_argument("-o", dest="outfile", required=True, help="Output .mif file")
+    ap.add_argument("-o", dest="outfile", help="Output .mif file (Quartus/altsyncram format)")
+    ap.add_argument("-x", "--hex", dest="hexfile",
+                     help="Output flat $readmemh-compatible .hex file (for inferred-RAM RTL / Verilator / Questa)")
     ap.add_argument("-m", dest="fill", default="0xFFFF",
                      help="Padding value for memory beyond the halt trap (default 0xFFFF). "
                           "Never executed - PC can't reach it once the trap is entered.")
     ap.add_argument("--depth", type=int, default=16384, help="Memory depth in words (default 16384 = 0x4000)")
     args = ap.parse_args()
+
+    if not args.outfile and not args.hexfile:
+        ap.error("at least one of -o (.mif) or -x/--hex (.hex) must be given")
 
     fill = int(args.fill, 16) if args.fill.lower().startswith("0x") else int(args.fill)
 
@@ -276,8 +323,13 @@ def main():
             print(f"  {addr:04X}  0x{word:04X}   {mnemonic} {operand_repr}{tail}")
             addr += 1
 
-    write_mif(events, args.outfile, args.depth, fill)
-    print(f"\nWrote {args.outfile} ({len(instr_events)} instructions, depth={args.depth}, fill=0x{fill:04X})")
+    if args.outfile:
+        write_mif(events, args.outfile, args.depth, fill)
+        print(f"\nWrote {args.outfile} ({len(instr_events)} instructions, depth={args.depth}, fill=0x{fill:04X})")
+
+    if args.hexfile:
+        write_hex(events, args.hexfile, args.depth, fill)
+        print(f"Wrote {args.hexfile} ({len(instr_events)} instructions, depth={args.depth}, fill=0x{fill:04X})")
 
 
 if __name__ == "__main__":

@@ -10,16 +10,10 @@
 VHighRiscTb::VHighRiscTb(VerilatedContext* _vcontextp__, const char* _vcname__)
     : VerilatedModel{*_vcontextp__}
     , vlSymsp{new VHighRiscTb__Syms(contextp(), _vcname__, this)}
-    , __PVT__std{vlSymsp->TOP.__PVT__std}
+    , __PVT____024unit{vlSymsp->TOP.__PVT____024unit}
     , __PVT__assertionmath{vlSymsp->TOP.__PVT__assertionmath}
     , __PVT__HighRiscTb__DOT__uut__DOT__Ibus{vlSymsp->TOP.__PVT__HighRiscTb__DOT__uut__DOT__Ibus}
     , __PVT__HighRiscTb__DOT__uut__DOT__Dbus{vlSymsp->TOP.__PVT__HighRiscTb__DOT__uut__DOT__Dbus}
-    , __PVT__HighRiscTb__DOT__uut__DOT__iDataMemory__DOT__iRAM__DOT__altsyncram_component__DOT__m_default__DOT__altsyncram_inst__DOT__dev{vlSymsp->TOP.__PVT__HighRiscTb__DOT__uut__DOT__iDataMemory__DOT__iRAM__DOT__altsyncram_component__DOT__m_default__DOT__altsyncram_inst__DOT__dev}
-    , __PVT__HighRiscTb__DOT__uut__DOT__iDataMemory__DOT__iRAM__DOT__altsyncram_component__DOT__m_default__DOT__altsyncram_inst__DOT__mem{vlSymsp->TOP.__PVT__HighRiscTb__DOT__uut__DOT__iDataMemory__DOT__iRAM__DOT__altsyncram_component__DOT__m_default__DOT__altsyncram_inst__DOT__mem}
-    , __PVT__HighRiscTb__DOT__uut__DOT__iProgramMemory__DOT__iRom__DOT__altsyncram_component__DOT__m_default__DOT__altsyncram_inst__DOT__dev{vlSymsp->TOP.__PVT__HighRiscTb__DOT__uut__DOT__iProgramMemory__DOT__iRom__DOT__altsyncram_component__DOT__m_default__DOT__altsyncram_inst__DOT__dev}
-    , __PVT__HighRiscTb__DOT__uut__DOT__iProgramMemory__DOT__iRom__DOT__altsyncram_component__DOT__m_default__DOT__altsyncram_inst__DOT__mem{vlSymsp->TOP.__PVT__HighRiscTb__DOT__uut__DOT__iProgramMemory__DOT__iRom__DOT__altsyncram_component__DOT__m_default__DOT__altsyncram_inst__DOT__mem}
-    , std__03a__03asemaphore__Vclpkg{vlSymsp->TOP.std__03a__03asemaphore__Vclpkg}
-    , std__03a__03aprocess__Vclpkg{vlSymsp->TOP.std__03a__03aprocess__Vclpkg}
     , rootp{&(vlSymsp->TOP)}
 {
     // Register model with the context
@@ -142,6 +136,6 @@ VL_ATTR_COLD void VHighRiscTb::traceBaseModel(VerilatedTraceBaseC* tfp, int leve
             " use --trace-fst with VerilatedFst object, and --trace-vcd with VerilatedVcd object");
     }
     stfp->spTrace()->addModel(this);
-    stfp->spTrace()->addInitCb(&trace_init, &(vlSymsp->TOP), name(), false, 1235);
+    stfp->spTrace()->addInitCb(&trace_init, &(vlSymsp->TOP), name(), false, 206);
     VHighRiscTb___024root__trace_register(&(vlSymsp->TOP), stfp->spTrace());
 }

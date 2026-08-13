@@ -13,13 +13,9 @@
 class VHighRiscTb__Syms;
 class VHighRiscTb___024root;
 class VerilatedVcdC;
-class VHighRiscTb_ALTERA_DEVICE_FAMILIES;
-class VHighRiscTb_ALTERA_MF_MEMORY_INITIALIZATION;
 class VHighRiscTb_Bus__B2_P2;
+class VHighRiscTb___024unit;
 #include "VHighRiscTb_assertionmath.h"
-class VHighRiscTb_std;
-class VHighRiscTb_std__03a__03aprocess__Vclpkg;
-class VHighRiscTb_std__03a__03asemaphore__Vclpkg;
 
 
 // This class is the main interface to the Verilated model
@@ -41,16 +37,10 @@ class alignas(VL_CACHE_LINE_BYTES) VHighRiscTb VL_NOT_FINAL : public VerilatedMo
     // CELLS
     // Public to allow access to /* verilator public */ items.
     // Otherwise the application code can consider these internals.
-    VHighRiscTb_std* const __PVT__std;
+    VHighRiscTb___024unit* const __PVT____024unit;
     VHighRiscTb_assertionmath* const __PVT__assertionmath;
     VHighRiscTb_Bus__B2_P2* const __PVT__HighRiscTb__DOT__uut__DOT__Ibus;
     VHighRiscTb_Bus__B2_P2* const __PVT__HighRiscTb__DOT__uut__DOT__Dbus;
-    VHighRiscTb_ALTERA_DEVICE_FAMILIES* const __PVT__HighRiscTb__DOT__uut__DOT__iDataMemory__DOT__iRAM__DOT__altsyncram_component__DOT__m_default__DOT__altsyncram_inst__DOT__dev;
-    VHighRiscTb_ALTERA_MF_MEMORY_INITIALIZATION* const __PVT__HighRiscTb__DOT__uut__DOT__iDataMemory__DOT__iRAM__DOT__altsyncram_component__DOT__m_default__DOT__altsyncram_inst__DOT__mem;
-    VHighRiscTb_ALTERA_DEVICE_FAMILIES* const __PVT__HighRiscTb__DOT__uut__DOT__iProgramMemory__DOT__iRom__DOT__altsyncram_component__DOT__m_default__DOT__altsyncram_inst__DOT__dev;
-    VHighRiscTb_ALTERA_MF_MEMORY_INITIALIZATION* const __PVT__HighRiscTb__DOT__uut__DOT__iProgramMemory__DOT__iRom__DOT__altsyncram_component__DOT__m_default__DOT__altsyncram_inst__DOT__mem;
-    VHighRiscTb_std__03a__03asemaphore__Vclpkg* const std__03a__03asemaphore__Vclpkg;
-    VHighRiscTb_std__03a__03aprocess__Vclpkg* const std__03a__03aprocess__Vclpkg;
 
     // Root instance pointer to allow access to model internals,
     // including inlined /* verilator public_flat_* */ items.

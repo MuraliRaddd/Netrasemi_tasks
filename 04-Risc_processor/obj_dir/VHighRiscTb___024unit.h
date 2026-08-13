@@ -14,6 +14,12 @@ class VHighRiscTb__Syms;
 class alignas(VL_CACHE_LINE_BYTES) VHighRiscTb___024unit final {
   public:
 
+    // DESIGN SPECIFIC STATE
+    CData/*0:0*/ __VmonitorOff;
+    QData/*63:0*/ __VmonitorNum;
+    static VlUnpacked<CData/*0:0*/, 16> __Venumtab_enum_valid15;
+    static VlUnpacked<std::string, 16> __Venumtab_enum_name15;
+
     // INTERNAL VARIABLES
     VHighRiscTb__Syms* vlSymsp;
     const char* vlNamep;

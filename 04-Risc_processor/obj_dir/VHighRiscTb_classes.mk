@@ -12,7 +12,7 @@ VM_TIMING = 1
 # Coverage output mode?  0/1 (from --coverage)
 VM_COVERAGE = 0
 # Parallel builds?  0/1 (from --output-split)
-VM_PARALLEL_BUILDS = 1
+VM_PARALLEL_BUILDS = 0
 # Tracing output mode?  0/1 (from --trace-fst/--trace-saif/--trace-vcd)
 VM_TRACE = 1
 # Tracing output mode in FST format?  0/1 (from --trace-fst)
@@ -30,28 +30,18 @@ VM_CLASSES_FAST += \
   VHighRiscTb \
   VHighRiscTb___024root__0 \
   VHighRiscTb_Bus__B2_P2__0 \
-  VHighRiscTb_std__03a__03asemaphore__Vclpkg__0 \
-  VHighRiscTb_std__03a__03aprocess__Vclpkg__0 \
   VHighRiscTb__main \
 
 # Generated module classes, non-fast-path, compile with low/medium optimization
 VM_CLASSES_SLOW += \
-  VHighRiscTb__ConstPool__0__Slow \
   VHighRiscTb___024root__Slow \
   VHighRiscTb___024root__0__Slow \
-  VHighRiscTb___024root__1__Slow \
   VHighRiscTb___024unit__Slow \
-  VHighRiscTb_std__Slow \
+  VHighRiscTb___024unit__0__Slow \
   VHighRiscTb_assertionmath__Slow \
   VHighRiscTb_assertionmath__0__Slow \
   VHighRiscTb_Bus__B2_P2__Slow \
   VHighRiscTb_Bus__B2_P2__0__Slow \
-  VHighRiscTb_ALTERA_MF_MEMORY_INITIALIZATION__Slow \
-  VHighRiscTb_ALTERA_MF_MEMORY_INITIALIZATION__0__Slow \
-  VHighRiscTb_ALTERA_DEVICE_FAMILIES__Slow \
-  VHighRiscTb_ALTERA_DEVICE_FAMILIES__0__Slow \
-  VHighRiscTb_std__03a__03asemaphore__Vclpkg__Slow \
-  VHighRiscTb_std__03a__03aprocess__Vclpkg__Slow \
 
 # Generated support classes, fast-path, compile with highest optimization
 VM_SUPPORT_FAST += \

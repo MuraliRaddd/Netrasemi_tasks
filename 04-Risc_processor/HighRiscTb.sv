@@ -70,11 +70,11 @@ module HighRiscTb();
 		end
 	end
 	
-	always @(posedge CLOCK_50)
+	/* always @(posedge CLOCK_50)
 	begin
 		$display("ROM[0]=%0h RomQ=%0h Instr=%0h time=%0t", uut.iProgramMemory.iRom.altsyncram_component.m_default.altsyncram_inst.mem_data[0],uut.iProgramMemory.iRom.q, uut.iProcesor.Ibus.ReadData, $time);	
 	
-	end
+	end */
 	// Fix the first switch threshold at 7, and the second switch threshold at 9. 
 	assign SWRead1Thres = 7;
 	assign SWRead2Thres = 9;
@@ -97,10 +97,8 @@ module HighRiscTb();
 		SWRead1 = '0;
 		SWRead2 = '0;
 		
-		//$monitor("Switch 1 : %0d | Switch 2: %0d | Switch Master : %0d | ClockCount = %0d | Current Operation = %s |Output Value: %0d | Output Value (SVA): %0d | WriteEnable: %0b | time  = %0t", SWRead1, SWRead2, SW, ClockCount, uut.iProcesor.OpCode, DataAssertVal, OutVal, WriteAssertEnable, $time);
+		$monitor("Switch 1 : %0d | Switch 2: %0d | Switch Master : %0d | ClockCount = %0d | Output Value: %0d | Output Value (SVA): %0d | WriteEnable: %0b |  OpCode=%s |  InDest: %0d | InSrc: %0d | OutDest: %0d | PortData1: %0d | PmuxReadData: %0d | DMuxSlaveData3: %0d | DMuxReadData: %0d | InBlockUse: %0b | time=%0t", SWRead1, SWRead2, SW, ClockCount, DataAssertVal, OutVal, WriteAssertEnable, uut.iProcesor.OpCode, uut.iProcesor.SourceDataA, uut.iProcesor.SourceDataB, uut.iProcesor.WriteData, uut.Pmux.PortData1, uut.Pmux.ReadData, uut.DMux.SlaveData3, uut.DMux.ReadData, uut.DMux.InUseBlock, $time);
 		
-		// $monitor("PC=%0d Instr=%0h OpCode=%s time=%0t", 
-         // uut.iProcesor.PcAddress, uut.iProcesor.Ibus.ReadData, uut.iProcesor.OpCode, $time);
 		
 
 		KEY = 4'b1; // Pull down all 4 bits of 'KEY' to activate the CPU (active high reset triggered by 'KEY[0]').
@@ -129,7 +127,7 @@ module HighRiscTb();
 //			end
 //		join
 		wait(WriteAssertEnable); 
-		repeat(2) @(posedge CLOCK_50);
+		#2;
 		
 		// Display the final value. 
 		$display("Final value is equal to %d.", DataAssertVal);

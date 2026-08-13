@@ -37,6 +37,8 @@ module HighRiscSystem
 	logic [15:0] LEDs;
 	logic Reset;
 	logic Clock;
+	logic [AddressWidth-1:0] Addr;
+	logic [DataWidth-1:0] SlaveReadData3;
 	 
 	assign Clock   = CLOCK_50;
 	assign VGA_CLK = ~CLOCK_50;
@@ -48,7 +50,11 @@ module HighRiscSystem
 	Bus #(2,2) Dbus();
 	
 	assign WriteAssertEnable = Dbus.Master.WriteEnable; // Assign the data memory block's write enable signal to the output assertion enable, to pinpoint when the final value is stored in the data memory. 
+	
 
+	// Assign the 'ReadData' channel to a MUX-controlled peripheral
+	// selector. 
+	 
 	// Only once the write enable rises high should the output data and address assertion be populated. 
 	always_comb
 	begin
@@ -65,13 +71,13 @@ module HighRiscSystem
 
 	HighRiscProcessor iProcesor (.*);
 
-	ProgramMemory iProgramMemory 
+	ProgramMemoryInferred iProgramMemory 
 	(
 		.Clock,
 		.TheBus(Ibus.Slave0)
 	);
 	
-	DataMemory iDataMemory 
+	DataMemoryInferred iDataMemory 
 	(
 		.Clock,
 		.TheBus(Dbus.Slave0)
@@ -106,6 +112,33 @@ module HighRiscSystem
 		
 		.TheBus(Dbus.Slave1)		
 	);
+
+	// Instantiate the instruction-side Mux, feeding the individual slave
+	// reads as inputs and outputting the corresponding ReadData value to
+	// the master, given the input address. 
+	Mux IMux(
+		.Addr(Ibus.Master.Address),
+		.SlaveData1(Ibus.Slave0.SlaveReadData0),
+		.ReadData(Ibus.ReadData)
+		);
+	// Ports must be Muxed, to ascertain which channel should be linked up
+	// to the intermediary 'SlaveReadData3'
+	Portmux Pmux(
+		.Addr(Dbus.Address),
+		.PortData1(Dbus.Port0.PortReadData0),
+		.PortData2(Dbus.Port1.PortReadData1),
+		.ReadData(SlaveReadData3)
+		);
+	// The Port Mux output, alongside all two block read outputs, are
+	// Muxed to ascertain which channel should be linked directly back to
+	// the master CPU. 
+	Mux DMux(
+		.Addr(Dbus.Address),
+		.SlaveData1(Dbus.Slave0.SlaveReadData0),
+		.SlaveData2(Dbus.Slave1.SlaveReadData1),
+		.SlaveData3(SlaveReadData3),
+		.ReadData(Dbus.ReadData)
+		);
 
 endmodule
 
@@ -151,8 +184,8 @@ interface Bus
 	// Assign the per-index scalar 'SlaveReadData0 and SlaveReadData1' signals to their
 	// indexed counterparts, extracted from the 'SlaveReadData' output
 	// port. 
-	assign SlaveReadData[0] = SlaveReadData0;
-       	assign SlaveReadData[1] = SlaveReadData1;
+	// assign SlaveReadData[0] = SlaveReadData0;
+       	// assign SlaveReadData[1] = SlaveReadData1;
 
 	// Assign the incoming indexed 'SlaveWriteEnable' vector to its
 	// isolated 'SlaveWriteEnable0 or SlaveWriteEnable1' counterpart. 	
@@ -162,8 +195,8 @@ interface Bus
 
 	// Apply an identical principle to the assignment of slice indexing of
 	// ports. 
-	assign PortReadData[0] = PortReadData0;
-	assign PortReadData[1] = PortReadData1;
+	// assign PortReadData[0] = PortReadData0;
+	// assign PortReadData[1] = PortReadData1;
 	assign PortWriteEnable0 = PortWriteEnable[0];
 	assign PortWriteEnable1 = PortWriteEnable[1];
 
@@ -178,14 +211,14 @@ interface Bus
 	// Establish the internal connections for the Rom Block, i.e. the Instruction domain. 
 	modport Slave0(
 		input SlaveAddress,
-		output .ReadData(SlaveReadData0),
+		output SlaveReadData0,
 		input WriteData,
 		input .WriteEnable(SlaveWriteEnable0)
 		);
 	// Establish the internal connections for the data memory block i.e. the Data domain. 
 	modport Slave1(
 		input SlaveAddress,
-		output .ReadData(SlaveReadData1),
+		output SlaveReadData1,
 		input WriteData,
 		input .WriteEnable(SlaveWriteEnable1)
 		);
@@ -221,7 +254,7 @@ interface Bus
 		SlaveAddress = Address[AddressWidth-3:0];
 		
 		// Pass back data to the master based on the address selected.
-		ReadData = SlaveReadData[BlockInUse];
+		// ReadData = SlaveReadData[BlockInUse];
 		
 		// Create a single write enable signal based on the address
 		SlaveWriteEnable = '0;
@@ -230,14 +263,14 @@ interface Bus
 	
 	modport Port0(
 	input  PortAddress,
-	output .ReadData(PortReadData0),
+	output PortReadData0,
 	input  WriteData,
 	input  .WriteEnable(PortWriteEnable0)
 	);
 
 	modport Port1(
 	input  PortAddress,
-	output .ReadData(PortReadData1),
+	output PortReadData1,
 	input  WriteData,
 	input  .WriteEnable(PortWriteEnable1)
 	);
@@ -274,7 +307,7 @@ interface Bus
 		PortWriteEnable[PortInUse] = WriteEnable & &Address[AddressWidth-1:AddressWidth-2];
 		
 		// Feed the read result back as the last 16k word block
-		SlaveReadData[3] = PortReadData[PortInUse];
+		// SlaveReadData[3] = PortReadData[PortInUse];
 	end
 	 
 endinterface
@@ -328,7 +361,7 @@ module VgaSystem
 	// locations.
 	always_ff @(posedge CLOCK_50)
 	begin
-		TheBus.ReadData = VgaRam[TheBus.SlaveAddress];
+		TheBus.SlaveReadData1 = VgaRam[TheBus.SlaveAddress];
 		if (TheBus.WriteEnable)	VgaRam[TheBus.SlaveAddress] <= TheBus.WriteData;
 			
 		if( nextX >= 11'd0 && nextX <= 11'd799 )
@@ -368,7 +401,7 @@ module BusInPort
 	// Asynchronous read
 	always_comb
 	begin
-			TheBus.ReadData = BusPort;
+			TheBus.PortReadData0 = BusPort;
 	end
 	
 endmodule
@@ -381,7 +414,7 @@ module BusOutPort
 (
 	input logic Clock,
 	interface   TheBus,
-	output logic [DataWidth-1:0] BusPort
+	output logic [DataWidth-1:0] BusPort,
 );
 
 	// Synchronous write
@@ -391,7 +424,7 @@ module BusOutPort
 	end
 	
 	// No input so the ReadData defaults to zero
-	assign TheBus.ReadData = '0;
+	assign TheBus.PortReadData1 = '0;
 	
 endmodule
 
@@ -401,7 +434,7 @@ endmodule
 // interface to be connected to an Altera IP memory block.
 // This module can be loaded using the In-System Memory 
 // Content Editor and is identified as PROG
-module ProgramMemory
+/* module ProgramMemory
 (
 	input logic Clock,
 	interface   TheBus
@@ -413,16 +446,42 @@ module ProgramMemory
 		.q(TheBus.ReadData)
 	);
 	
+endmodule */
+
+
+// Direct alternative to utilising 'altsyncram' artifacts. The Program Memory
+// ROM block and Data Memory RAM block are inferred instead, to be baked into the FPGA bitstream during
+// compilation. 
+module ProgramMemoryInferred #(parameter SlaveAddrWidth = 14)
+	(
+        input logic Clock,
+        interface   TheBus
+        );
+	
+	logic [DataWidth-1:0] RomBlock [(1 << SlaveAddrWidth)]; // Initialise the inferred ROM memory block, to be flashed with the instruction program. Note that (1 << SlaveAddrWidth) computes 2^14, to determine the required number of memory addresses. 
+
+	// Invoke a '$readmemh' block (totally synthesisable and simulatable),
+	// to transform the 'hex' formatted instruction program into binary,
+	// machine readable bits. 
+	initial
+	begin	
+		$readmemh("Program.hex", RomBlock);
+	end
+	
+	// Synchronise non-blocking assignments to the output 'ReadData'
+	// channel with the master clock signal. 
+	always_ff@(posedge Clock)
+	begin
+		TheBus.SlaveReadData0 <= RomBlock[TheBus.SlaveAddress];
+	end
+
 endmodule
-
-
-
 
 // The DataMemory module is a wrapper that allows the bus
 // interface to be connected to an Altera IP memory block
 // This module can be loaded using the In-System Memory 
 // Content Editor and is identified as DATA
-module DataMemory
+/* module DataMemory
 (
 	input logic Clock,
 	interface   TheBus
@@ -434,5 +493,131 @@ module DataMemory
 		.wren(TheBus.WriteEnable),
 		.q(TheBus.ReadData)
 	);
+endmodule */
+
+module DataMemoryInferred #(parameter SlaveAddrWidth = 14)
+        (
+        input logic Clock,
+        interface   TheBus
+        );
+
+        logic [DataWidth-1:0] RamBlock [(1 << SlaveAddrWidth)]; // Initialise the inferred RAM memory block, to be flashed with the data memory. Note that (1 << SlaveAddrWidth) computes 2^14, to determine the required number of memory addresses.
+
+        // Invoke a '$readmemh' block (totally synthesisable and simulatable),
+        // to transform the 'hex' formatted instruction program into binary,
+        // machine readable bits.
+        initial
+        begin
+                $readmemh("Data.hex", RamBlock);
+        end
+
+        always_ff@(posedge Clock)
+        begin
+                TheBus.SlaveReadData0 <= RamBlock[TheBus.SlaveAddress];
+		if (TheBus.WriteEnable)
+		begin
+			RamBlock[TheBus.SlaveAddress] <= TheBus.WriteData;
+		end
+			
+        end
+
 endmodule
 
+// Assign the 'ReadData' channel to a MUX-controlled peripheral selector
+// (Read-domain exclusive). 
+/*module Dmux(
+	input logic [AddressWidth-1:0] Addr,
+	input logic [DataWidth-1:0] SlaveData1,
+	input logic [DataWidth-1:0] SlaveData2,
+	output logic [DataWidth-1:0] ReadData
+	);
+	
+	logic [1:0] InUseBlock;
+	assign InUseBlock = Addr[(AddressWidth-1):(AddressWidth-2)];
+	
+	always_comb
+	begin
+		if (&(InUseBlock))
+		begin
+			ReadData = SlaveData2;
+		end
+		else
+		begin
+			ReadData = SlaveData1;
+		end
+	end
+endmodule */
+
+// Assign the '' channel to a MUX-controlled peripheral selector
+// (Read-domain and Write-Domain compatible). 
+module Mux(
+        input logic [AddressWidth-1:0] Addr,
+        input logic [DataWidth-1:0] SlaveData1,
+        input logic [DataWidth-1:0] SlaveData2,
+	input logic [DataWidth-1:0] SlaveData3,
+        output logic [DataWidth-1:0] ReadData
+        );
+
+        logic [1:0] InUseBlock;
+        assign InUseBlock = Addr[(AddressWidth-1):(AddressWidth-2)];
+
+        always_comb
+        begin
+		case(InUseBlock)
+			1'd0:
+			begin
+				ReadData = SlaveData1;
+			end
+
+			1'd1:
+			begin	
+				ReadData = SlaveData2;
+			end
+
+			2'b11:
+			begin
+				ReadData = SlaveData3;
+			end
+
+			default:
+			begin	
+				ReadData = '0;
+			end
+		endcase
+	end
+endmodule
+
+
+// Assign the ' channel to a MUX-controlled peripheral selector
+// (Read-domain exclusive). 
+module Portmux(
+        input logic [AddressWidth-1:0] Addr,
+        input logic [DataWidth-1:0] PortData1,
+        input logic [DataWidth-1:0] PortData2,
+        output logic [DataWidth-1:0] ReadData
+        );
+
+        logic [4:0] InUsePort;
+	// logic [DataWidth-1:0] PortData;
+        assign InUsePort = Addr[(AddressWidth-3):(AddressWidth-7)];
+
+        always_comb
+        begin
+        	case(InUsePort)
+			1'd0:
+			begin
+				ReadData = PortData1;
+			end
+			
+			1'd1:
+			begin
+				ReadData = PortData2;
+			end
+			
+			default:
+			begin
+				ReadData = '0;
+			end
+		endcase
+	end	
+endmodule
