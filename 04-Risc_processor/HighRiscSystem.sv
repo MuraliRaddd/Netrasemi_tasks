@@ -1,7 +1,4 @@
 // HighRiscSystem
-// C T Clarke 
-// November 2015
-//
 // The HighRisc system module connects a 
 // HighRisc processor to memory and peripherals
 // via separate instruction and data busses.
