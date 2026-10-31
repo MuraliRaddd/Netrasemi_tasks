@@ -60,7 +60,7 @@ package assertionmath;
 		expFlags.out = y;
 	
 	// Eventually, after all register left shifts have been successfully conducted, the output carry flag is assigned to MSB of the source. 
-		expFlags.Carry = a[15];
+		expFlags.Carry = a[DataWidth-1];
 			
 					 
 		return expFlags; // Output the value of c once the function is executed. 
@@ -73,7 +73,7 @@ package assertionmath;
 		y = a >> 1;
 	
 	// The current input carry flag is assigned to the LSB of the output destination register. 
-		y[15] = carr;
+		y[DataWidth-1] = carr;
 		
 		expFlags.out = y;
 	
@@ -107,8 +107,8 @@ package assertionmath;
 	
 		// Detail continuous assignments to validate whether the negative, overflow or zeroes must be pulled up. 
 		expFlags.Zero = (y == 0);
-		expFlags.Negative = (y[15] == 1);
-		expFlags.Overflow = ((((b[15] || a[15]) == 0) && (y[15] == 1)) || (((b[15] && a[15]) == 1) && (y[15] == 0)));
+		expFlags.Negative = (y[DataWidth-1] == 1);
+		expFlags.Overflow = ((((b[DataWidth-1] || a[DataWidth-1]) == 0) && (y[DataWidth-1] == 1)) || (((b[DataWidth-1] && a[DataWidth-1]) == 1) && (y[DataWidth-1] == 0)));
 		 
 		// For loop to compute the parity flag (note that when the sum of all bits is zero, the number contains an even number of 1s.)
 		for(int j = 0; j < DataWidth; j++)
@@ -153,8 +153,8 @@ package assertionmath;
 	
 		// Detail continuous assignments to validate whether the negative, overflow or zeroes must be pulled up. 
 		expFlags.Zero = (y == 0);
-		expFlags.Negative = (y[15] == 1);
-		expFlags.Overflow = ((((b[15] == 0) && (a[15] == 1)) && (y[15] == 1)) || (((b[15] == 1) && (a[15] == 0)) && (y[15] == 0)));
+		expFlags.Negative = (y[DataWidth-1] == 1);
+		expFlags.Overflow = ((((b[DataWidth-1] == 0) && (a[DataWidth-1] == 1)) && (y[DataWidth-1] == 1)) || (((b[DataWidth-1] == 1) && (a[DataWidth-1] == 0)) && (y[DataWidth-1] == 0)));
 		 
 		// For loop to compute the parity flag (note that when the sum of all bits is zero, the number contains an even number of 1s.)
 		for(int j = 0; j < DataWidth; j++)
@@ -191,7 +191,7 @@ package assertionmath;
 	
 		// Detail continuous assignments to validate whether the negative, overflow or zeroes must be pulled up. 
 		expFlags.Zero = (y == 0);
-		expFlags.Negative = (y[15] == 1);
+		expFlags.Negative = (y[DataWidth-1] == 1);
 		 
 		// For loop to compute the parity flag (note that when the sum of all bits is zero, the number contains an even number of 1s.)
 		for(int j = 0; j < DataWidth; j++)
@@ -231,7 +231,7 @@ package assertionmath;
 	
 		// Detail continuous assignments to validate whether the negative, overflow or zeroes must be pulled up. 
 		expFlags.Zero = (y == 0);
-		expFlags.Negative = (y[15] == 1);
+		expFlags.Negative = (y[DataWidth-1] == 1);
 		 
 		// For loop to compute the parity flag (note that when the sum of all bits is zero, the number contains an even number of 1s.)
 		for(int j = 0; j < DataWidth; j++)
@@ -269,7 +269,7 @@ package assertionmath;
 	
 		// Detail continuous assignments to validate whether the negative, overflow or zeroes must be pulled up. 
 		expFlags.Zero = (y == 0);
-		expFlags.Negative = (y[15] == 1);
+		expFlags.Negative = (y[DataWidth-1] == 1);
 		 
 		// For loop to compute the parity flag (note that when the sum of all bits is zero, the number contains an even number of 1s.)
 		for(int j = 0; j < DataWidth; j++)
@@ -305,7 +305,7 @@ package assertionmath;
 	
 		// Detail continuous assignments to validate whether the negative, overflow or zeroes must be pulled up. 
 		expFlags.Zero = (y == 0);
-		expFlags.Negative = (y[15] == 1);
+		expFlags.Negative = (y[DataWidth-1] == 1);
 		 
 		// For loop to compute the parity flag (note that when the sum of all bits is zero, the number contains an even number of 1s.)
 		for(int j = 0; j < DataWidth; j++)
