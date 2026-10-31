@@ -1,8 +1,4 @@
-// InstructionSetPkg
-//
-// C T Clarke
-//
-// 10/10/17
+
 //
 // This package is used to define all the values and types 
 // needed for the highRisc instruction set.
@@ -13,7 +9,7 @@ package InstructionSetPkg;
 	// FPGA. This is because the hardware doesn't have enough
 	// switches. For simulation, and the overall processor 
 	// configuration, set the value to 16.
-	parameter DataWidth       = 16;
+	parameter DataWidth       = 32;
 	
 	// An example of an enumerated type that defines the names
 	// for all of the instruction set opcodes.
@@ -50,12 +46,16 @@ package InstructionSetPkg;
   
 	// This setup works well for dataWidth values of 4 and 16
 	// It is not tested for other values
-	parameter ImmediateWidth     =    DataWidth/3  + DataWidth%3;
-	parameter ImmediateMidStart  =    DataWidth/3  + DataWidth%3;
-	parameter ImmediateHighStart = 2*(DataWidth/3) + DataWidth%3;
+	parameter AddressWidth    = 16; // Instructions are sized at 16 bits temporarily - to be upgraded to 32 bit words. 	// CHANGE THIS PARAMETER to 4 for testing the ALU on the 
+	// FPGA. This is because the hardware doesn't have enough
+	// switches. For simulation, and the overall processor 
+	// configuration, set the value to 16.
+	parameter ImmediateWidth     =    AddressWidth/3  + AddressWidth%3;
+	parameter ImmediateMidStart  =    AddressWidth/3  + AddressWidth%3;
+	parameter ImmediateHighStart = 2*(AddressWidth/3) + AddressWidth%3;
 
 	// Sizes of various busses and bit positions
-	parameter AddressWidth    = 16;
+	
 	parameter RfAddressWidth  =  6;
 	parameter MemAddressWidth = 16;
 	parameter OffsetWidth     =  9;
