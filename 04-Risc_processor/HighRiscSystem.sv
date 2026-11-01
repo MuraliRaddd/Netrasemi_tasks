@@ -43,8 +43,8 @@ module HighRiscSystem
 	assign LEDR    = LEDs[9:0];
 
 
-   	Bus #(2,2) Ibus();
-	Bus #(2,2) Dbus();
+	Bus #(2,2, AddressWidth) Ibus();
+	Bus #(2,2, DataWidth) Dbus();
 	
 	assign WriteAssertEnable = Dbus.Master.WriteEnable; // Assign the data memory block's write enable signal to the output assertion enable, to pinpoint when the final value is stored in the data memory. 
 	
@@ -154,26 +154,29 @@ interface Bus
 	// number of 512 word block slave modports that can be 
 	// used.
 	parameter Ports = 0
+
+	// Differentiate the instruction width from the data width (16 vs 32)
+	parameter Width = DataWidth
 )
 ();
 	// Basic bus connections
 	logic [AddressWidth-1:0] Address;
-	logic [DataWidth-1:0]    ReadData;
-	logic [DataWidth-1:0]    WriteData;
+	logic [Width-1:0]    ReadData;
+	logic [Width-1:0]    WriteData;
 	logic                    WriteEnable;
 
 	// 16k word block connections
 	logic [13:0]             SlaveAddress;
-	logic [DataWidth-1:0] 	 SlaveReadData [4];
-	logic [DataWidth-1:0] SlaveReadData0, SlaveReadData1;
+	logic [Width-1:0] 	 SlaveReadData [4];
+	logic [Width-1:0] SlaveReadData0, SlaveReadData1;
 	logic SlaveWriteEnable0, SlaveWriteEnable1;
 	logic [3:0]       SlaveWriteEnable;
 	logic [1:0]              BlockInUse;
 	
 	// 512 word block connections
 	logic [8:0]              PortAddress;
-	logic [DataWidth-1:0] 	 PortReadData [32];
-	logic [DataWidth-1:0] 	 PortReadData0, PortReadData1;
+	logic [Width-1:0] 	 PortReadData [32];
+	logic [Width-1:0] 	 PortReadData0, PortReadData1;
 	logic [32:0]        PortWriteEnable;
 	logic PortWriteEnable0, PortWriteEnable1;	
 	logic [4:0]              PortInUse;
