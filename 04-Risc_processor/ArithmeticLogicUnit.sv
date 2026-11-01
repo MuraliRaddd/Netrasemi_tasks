@@ -72,7 +72,7 @@ module ArithmeticLogicUnit
 					OutDest = InSrc >> 1;
 				
 				// The current input carry flag is assigned to the MSB of the output destination flag. 
-					OutDest[15] = InFlags.Carry;
+					OutDest[DataWidth-1] = InFlags.Carry;
 				
 				// Eventually, after all register right shifts have been successfully conducted, the output carry flag is assigned to LSB of the source. 
 					OutFlags.Carry = InSrc[0];
@@ -119,8 +119,8 @@ module ArithmeticLogicUnit
 					
 					// Detail continuous assignments to validate whether the negative, overflow or zeroes must be pulled up. 
 					OutFlags.Zero = (OutDest == 0);
-					OutFlags.Negative = (OutDest[15] == 1);
-					OutFlags.Overflow = ((((InSrc[15] || InDest[15]) == 0) && (OutDest[15] == 1)) || (((InSrc[15] && InDest[15]) == 1) && (OutDest[15] == 0)));
+					OutFlags.Negative = (OutDest[DataWidth-1] == 1);
+					OutFlags.Overflow = ((((InSrc[DataWidth-1] || InDest[DataWidth-1]) == 0) && (OutDest[DataWidth-1] == 1)) || (((InSrc[DataWidth-1] && InDest[DataWidth-1]) == 1) && (OutDest[DataWidth-1] == 0)));
 					
 					// casez is favoured of standard case terminology, since this block includes don't care states (denoted by ?)
 					/* casez(OutDest)
@@ -193,8 +193,8 @@ module ArithmeticLogicUnit
 					
 					// Detail continuous assignments to validate whether the negative, overflow or zeroes must be pulled up. 
 					OutFlags.Zero = (OutDest == 0);
-					OutFlags.Negative = (OutDest[15] == 1);
-					OutFlags.Overflow = ((((InSrc[15] == 0) && (InDest[15] == 1)) && (OutDest[15] == 1)) || (((InSrc[15] == 1) && (InDest[15] == 0)) && (OutDest[15] == 0)));
+					OutFlags.Negative = (OutDest[DataWidth-1] == 1);
+					OutFlags.Overflow = ((((InSrc[DataWidth-1] == 0) && (InDest[DataWidth-1] == 1)) && (OutDest[DataWidth-1] == 1)) || (((InSrc[DataWidth-1] == 1) && (InDest[DataWidth-1] == 0)) && (OutDest[DataWidth-1] == 0)));
 					
 					// casez is favoured of standard case terminology, since this block includes don't care states (denoted by ?)
 					/* casez(OutDest)
@@ -255,7 +255,7 @@ module ArithmeticLogicUnit
 					
 					// Detail continuous assignments to validate whether the negative, overflow or zeroes must be pulled up. 
 					OutFlags.Zero = (OutDest == 0);
-					OutFlags.Negative = (OutDest[15] == 1);
+					OutFlags.Negative = (OutDest[DataWidth-1] == 1);
 					// For loop to compute the parity flag (note that when the sum of all bits is zero, the number contains an even number of 1s.)
 					for(int j = 0; j < DataWidth; j++)
 					begin
@@ -280,7 +280,7 @@ module ArithmeticLogicUnit
 					
 					// Detail continuous assignments to validate whether the negative, overflow or zeroes must be pulled up. 
 					OutFlags.Zero = (OutDest == 0);
-					OutFlags.Negative = (OutDest[15] == 1);
+					OutFlags.Negative = (OutDest[DataWidth-1] == 1);
 					
 					// For loop to compute the parity flag (note that when the sum of all bits is zero, the number contains an even number of 1s.)
 					for(int j = 0; j < DataWidth; j++)
@@ -307,7 +307,7 @@ module ArithmeticLogicUnit
 					
 					// Detail continuous assignments to validate whether the negative, overflow or zeroes must be pulled up. 
 					OutFlags.Zero = (OutDest == 0);
-					OutFlags.Negative = (OutDest[15] == 1);
+					OutFlags.Negative = (OutDest[DataWidth-1] == 1);
 					
 					// For loop to compute the parity flag (note that when the sum of all bits is zero, the number contains an even number of 1s.)
 					for(int j = 0; j < DataWidth; j++)
@@ -334,7 +334,7 @@ module ArithmeticLogicUnit
 					
 					// Detail continuous assignments to validate whether the negative, overflow or zeroes must be pulled up. 
 					OutFlags.Zero = (OutDest == 0);
-					OutFlags.Negative = (OutDest[15] == 1);
+					OutFlags.Negative = (OutDest[DataWidth-1] == 1);
 					
 					// For loop to compute the parity flag (note that when the sum of all bits is zero, the number contains an even number of 1s.)
 					for(int j = 0; j < DataWidth; j++)
