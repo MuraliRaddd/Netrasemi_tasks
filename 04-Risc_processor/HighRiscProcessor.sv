@@ -65,7 +65,7 @@ module HighRiscProcessor
 	
 	// The register file holds all the data values except PC, FLAGs
 	// Port A is the destination port, port B is the source port
-	register_file iRF
+	register_file #(.REG_WIDTH(DataWidth)) iRF
 	(
 		.Clock,
 		
