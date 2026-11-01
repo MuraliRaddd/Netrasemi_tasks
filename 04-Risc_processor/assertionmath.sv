@@ -336,7 +336,7 @@ package assertionmath;
 	function automatic expFlags_t calc_liu(logic signed [ImmediateWidth-1:0] a, logic signed [DataWidth-1:0] b); // Note that the automatic keyword stores the function in a unique memory address isolated from other functions to be ran concurrently. 	
 				
 		if (a[ImmediateWidth - 1] ==  1)
-			expFlags.out = {a[ImmediateWidth - 2:0], b[ImmediateHighStart - 1:0]};
+			expFlags.out = $signed({a[ImmediateWidth - 2:0], b[ImmediateHighStart - 1:0]});
 		else if  (a[ImmediateWidth - 1] ==  0)	
 			expFlags.out = $signed({a[ImmediateWidth - 2:0], b[ImmediateMidStart - 1:0]});
 		else
