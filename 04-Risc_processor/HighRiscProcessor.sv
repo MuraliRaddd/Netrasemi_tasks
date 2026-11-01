@@ -37,7 +37,7 @@ module HighRiscProcessor
 	logic       [DataWidth-1:0] WriteData;
 
    // Indirect data bus connections 
-	assign Dbus.Address   = (OpCode == LOAD) ? SourceDataB : SourceDataA;
+	assign Dbus.Address   = (OpCode == LOAD) ? SourceDataB [AddressWidth-1:0]: SourceDataA [AddressWidth-1:0];
 	assign Dbus.WriteData = SourceDataB;
 
 	// Indirect instruction bus connections
@@ -85,7 +85,7 @@ module HighRiscProcessor
 	(
 		.Clock,
 		.Reset,
-		.LoadValue(WriteData),
+		.LoadValue(WriteData[AddressWidth-1:0]),
 		.LoadEnable(PcWriteEnable),
 		.Offset(PcOffsetValue),
 		.OffsetEnable(PcOffsetEnable),
