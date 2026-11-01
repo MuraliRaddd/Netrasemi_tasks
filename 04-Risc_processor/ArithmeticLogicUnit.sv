@@ -86,7 +86,7 @@ module ArithmeticLogicUnit
 			LIU:
 				begin
 					if (InImm[ImmediateWidth - 1] ==  1)
-						OutDest = {InImm[ImmediateWidth - 2:0], InDest[ImmediateHighStart - 1:0]};
+						OutDest = $signed({InImm[ImmediateWidth - 2:0], InDest[ImmediateHighStart - 1:0]});
 					else if  (InImm[ImmediateWidth - 1] ==  0)	
 						OutDest = $signed({InImm[ImmediateWidth - 2:0], InDest[ImmediateMidStart - 1:0]});
 					else
