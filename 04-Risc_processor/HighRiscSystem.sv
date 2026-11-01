@@ -31,7 +31,7 @@ module HighRiscSystem
 	// output logic [AddressWidth-1:0] AddrAssert
 );
 
-	logic [15:0] LEDs;
+	logic [DataWidth-1:0] LEDs;
 	logic Reset;
 	logic Clock;
 	logic [AddressWidth-1:0] Addr;
